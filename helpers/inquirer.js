@@ -81,28 +81,28 @@ const leerInput = async (message = 'Introduzca un valor:') => {
 };
 
 /**
- * Recibir todas las tareas y, tras elegir en menú la deseada, devolver ese id
- * @param {Tarea[]} tareas Array con toda la información de las tareas
+ * Recibir los lugares y devolver la elección del que conicide con el que el usuario buscaba
+ * @param {lugares[]} lugares Array con toda la información de los lugares
  * @returns {string} Id de la tarea a borrar
  */
-const listadoTareasBorrar = async (tareas = []) => {
-  const choices = tareas.map(({id, desc}, i) => {
+const listarLugares = async (lugares = []) => {
+  const choices = lugares.map(({id, nombre}, i) => {
     const idx = `${i + 1}.`.green;
 
     return {
       value: id,
-      name: `${idx} ${desc}.`,
+      name: `${idx} ${nombre}.`,
     };
   });
 
   // Añadir la opción de cancelar
-  choices.push({value: '0', name: `${'0'.green}. Cancelar borrado.`});
+  choices.push({value: '0', name: `${'0'.green}. Cancelar.`});
 
   const questions = [
     {
       type: 'list',
       name: 'id',
-      message: 'Borrar:',
+      message: 'Seleccionar ubicación:',
       choices,
     },
   ];
@@ -161,7 +161,7 @@ export {
   confirmar,
   inquirerMenu,
   leerInput,
-  listadoTareasBorrar,
+  listarLugares,
   mostrarListadoChecklist,
   pausa,
 };

@@ -7,7 +7,11 @@ class Busqueda {
     // TODO leer BD si existe
   }
 
-  get paramsMapbox() {
+  /**
+   * Devuelve un objeto con los parámetros necesarios para la petición de datos
+   * @returns {object} Configuración params para petición fetch
+   */
+  #paramsMapbox() {
     return {
       access_token: process.env.MAPBOX_KEY,
       limit: 5,
@@ -15,18 +19,27 @@ class Busqueda {
     };
   }
 
+  /**
+   * Consulta, en base al nombre del lugar, posibles opciones que coincidan
+   * @param {string} lugar Nombre del mundo a consultar
+   * @returns {{id: string, nombre: string, lng: number, lat: number}[]} Devuelve la información de la ciudad seleccionada, más de una en caso coincidente
+   */
   async ciudad(lugar = '') {
     try {
       // Petición HTTP
       const instance = axios.create({
         baseURL: `https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json`,
-        params: this.paramsMapbox,
+        params: this.#paramsMapbox(),
       });
 
       const {data} = await instance.get();
-      console.log(data);
 
-      return []; // ? Devolverá los lugares
+      return data.features.map(({id, place_name, center}) => ({
+        id,
+        nombre: place_name,
+        lng: center[0],
+        lat: center[1],
+      }));
     } catch (error) {
       return [];
     }

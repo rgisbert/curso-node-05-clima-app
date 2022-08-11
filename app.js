@@ -3,14 +3,19 @@ dotenv.config();
 
 import colors from 'colors';
 
-import {inquirerMenu, leerInput, pausa} from './helpers/inquirer.js';
+import {
+  inquirerMenu,
+  leerInput,
+  listarLugares,
+  pausa,
+} from './helpers/inquirer.js';
 import Busqueda from './models/busquedas.js';
 
 const main = async () => {
   const busqueda = new Busqueda();
   let menuOpt;
 
-  do {
+  showMenu: do {
     menuOpt = await inquirerMenu();
 
     // Diferente forma. Si quiere salir, directamente salgo del bucle
@@ -20,20 +25,27 @@ const main = async () => {
     switch (menuOpt) {
       case 1: // Buscar ciudad
         // Mostrar mensaje
-        const lugar = await leerInput('Ciudad:');
-        await busqueda.ciudad(lugar);
+        const termino = await leerInput('Ciudad:');
 
         // Buscar los lugares
+        const lugares = await busqueda.ciudad(termino);
 
         // Seleccionar el lugar
+        const id = await listarLugares(lugares);
+        if (id === '0') continue showMenu; // Si cancela, volvemos a menú
+
+        // Datos de la selección
+        const {nombre, lng, lat} = lugares.find((lugar) => lugar.id === id);
 
         // Clima
 
         // Mostrar resultados
-        console.log('\nInformación de la ciudad.\n'.green);
-        console.log('Ciudad:');
-        console.log('Lat:');
-        console.log('Lng:');
+
+        console.log('\n\nInformación de la ciudad'.green);
+        console.log('========================'.green);
+        console.log('Ciudad:', nombre);
+        console.log('Lat:', lat);
+        console.log('Lng:', lng);
         console.log('Temperatura:');
         console.log('Mínima:');
         console.log('Máxima:');
