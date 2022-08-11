@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
+
 import colors from 'colors';
 
 import {inquirerMenu, leerInput, pausa} from './helpers/inquirer.js';
