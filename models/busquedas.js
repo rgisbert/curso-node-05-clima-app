@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 class Busqueda {
   historial = ['Madrid', 'Londres'];
 
@@ -5,11 +7,30 @@ class Busqueda {
     // TODO leer BD si existe
   }
 
-  async ciudad(lugar = '') {
-    // TODO petición http
-    console.log({lugar});
+  get paramsMapbox() {
+    return {
+      access_token:
+        'pk.eyJ1Ijoicmdpc2JlcnQiLCJhIjoiY2w2b3U2M21yMGJieTNmcnJ5NnIwbzM4ZCJ9.CcFFlPJLbXb5pwy45Z9DAw',
+      limit: 5,
+      language: 'es',
+    };
+  }
 
-    return []; // ? Devolverá los lugares
+  async ciudad(lugar = '') {
+    try {
+      // Petición HTTP
+      const instance = axios.create({
+        baseURL: `https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json`,
+        params: this.paramsMapbox,
+      });
+
+      const {data} = await instance.get();
+      console.log(data);
+
+      return []; // ? Devolverá los lugares
+    } catch (error) {
+      return [];
+    }
   }
 }
 
