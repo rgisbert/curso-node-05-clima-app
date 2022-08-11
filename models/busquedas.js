@@ -1,10 +1,14 @@
+import fs from 'fs';
+
+import colors from 'colors';
 import axios from 'axios';
 
 class Busqueda {
-  historial = ['Madrid', 'Londres'];
+  #historial = [];
+  #DBPath = './db/database.json';
 
   constructor() {
-    // TODO leer BD si existe
+    this.#leerDB();
   }
 
   /**
@@ -75,6 +79,61 @@ class Busqueda {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  /**
+   * Guarda las búsquedas, colocando la más reciente, delante
+   * @param {string} lugar Localidad con la ubicación tal cual lo muestra la API
+   */
+  agregarHistorial(lugar = '') {
+    // Evitar grabar si ya existe
+    if (this.#historial.includes(lugar.toLowerCase())) return;
+
+    // Limito unidades
+    this.#historial = this.#historial.splice(0, 5);
+
+    this.#historial.unshift(lugar.toLowerCase());
+
+    // Guardar en JSON
+    this.#guardarDB();
+  }
+
+  /**
+   * Guardar historial en archivo json
+   */
+  #guardarDB() {
+    const payload = {
+      historial: this.#historial,
+    };
+
+    fs.writeFileSync(this.#DBPath, JSON.stringify(payload));
+  }
+
+  /**
+   * Recupera la información del archivo json
+   */
+  async #leerDB() {
+    if (fs.existsSync(this.#DBPath)) {
+      const info = fs.readFileSync(this.#DBPath, {encoding: 'utf-8'});
+      const data = JSON.parse(info);
+
+      this.#historial = data.historial;
+    }
+  }
+
+  /**
+   * Muestra listado de las últimas búsquedas.
+   */
+  get imprimirHistorialCapitalizado() {
+    return this.#historial.map((lugar, i) => {
+      const idx = `${i + 1}.`.green;
+
+      let palabras = lugar.split(' ');
+      palabras = palabras.map((p) => p[0].toUpperCase() + p.substring(1));
+      palabras = palabras.join(' ');
+
+      console.log(`${idx} ${palabras}.`);
+    });
   }
 }
 

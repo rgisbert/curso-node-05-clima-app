@@ -1,11 +1,8 @@
 import colors from 'colors';
 
 import {leerInput, listarLugares} from '../helpers/inquirer.js';
-import Busqueda from '../models/busquedas.js';
 
-const buscarCiudad = async () => {
-  const busqueda = new Busqueda();
-
+const buscarCiudad = async (busqueda) => {
   // Mostrar mensaje
   const termino = await leerInput('Ciudad:');
 
@@ -18,6 +15,9 @@ const buscarCiudad = async () => {
 
   // Datos de la selección
   const {nombre, lng, lat} = lugares.find((lugar) => lugar.id === id);
+
+  // Guarda el nombre de la búsqueda
+  busqueda.agregarHistorial(nombre);
 
   // Clima
   const {clima_desc, temp, temp_max, temp_min} = await busqueda.climaLugar(
